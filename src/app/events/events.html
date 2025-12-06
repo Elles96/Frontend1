@@ -1,1 +1,91 @@
-<p>events works!</p>
+<div class="container mt-5">
+  <h2>Pasākumi</h2>
+  <form (ngSubmit)="onCreateEvent()" class="mb-4">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Nosaukums"
+          [field]="eventForm.nosaukums"
+        />
+      </div>
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Apraksts"
+          [field]="eventForm.apraksts"
+        />
+      </div>
+      <div class="col-md-2">
+        <input type="date" class="form-control" [field]="eventForm.datums" />
+      </div>
+      <div class="col-md-2">
+        <input type="time" class="form-control" [field]="eventForm.laiks" />
+      </div>
+    </div>
+    <div class="row g-2 mt-2">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Vieta" [field]="eventForm.vieta" />
+      </div>
+      <div class="col-md-2">
+        <input
+          type="number"
+          class="form-control"
+          placeholder="Max dalībnieki"
+          [field]="eventForm.maxDalibnieki"
+        />
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-success">Izveidot pasākumu</button>
+      </div>
+    </div>
+  </form>
+
+  @if (errorMsg()) {
+  <div class="alert alert-danger">{{ errorMsg() }}</div>
+  } @if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+  }
+  <ul class="list-group">
+    @for (event of pasakumi(); track event.id) {
+    <li class="list-group-item">
+      <strong>{{ event.nosaukums }}</strong> - {{ event.datums }} {{ event.laiks }}<br />
+      <span>{{ event.vieta }}</span
+      ><br />
+      <span>Dalībnieki: {{ event.currentDalibnieki }}/{{ event.maxDalibnieki }}</span>
+      <p>{{ event.apraksts }}</p>
+
+      <div class="mt-2">
+        @if (event.currentDalibnieki >= event.maxDalibnieki) {
+        <span class="badge bg-danger">Pilns</span>
+        } @if (signedUpEventIds().includes(event.id)) {
+        <span class="badge bg-success">Pieteikts</span>
+        }
+      </div>
+
+      <div class="mt-2">
+        <button
+          class="btn btn-primary btn-sm"
+          (click)="onSignUp(event.id)"
+          [disabled]="
+            event.currentDalibnieki >= event.maxDalibnieki ||
+            signedUpEventIds().includes(event.id) ||
+            false
+          "
+        >
+          Pieteikties
+        </button>
+        <button
+          class="btn btn-warning btn-sm"
+          (click)="onCancel(event.id)"
+          [disabled]="!signedUpEventIds().includes(event.id) || false"
+        >
+          Atcelt
+        </button>
+      </div>
+    </li>
+    }
+  </ul>
+</div>

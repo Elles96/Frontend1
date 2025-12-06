@@ -1,4 +1,4 @@
-export interface Pasakums {
+export type Pasakums = {
     id: number;
     nosaukums: string;
     apraksts: string;
