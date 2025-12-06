@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { PasakumsService } from '../services/pasakums.service';
-import { Router } from '@angular/router';
+import { Pasakums } from '../models/pasakums.model';
 
 @Component({
   selector: 'app-events',
@@ -8,8 +8,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./events.css'],
 })
 export class EventsComponent {
+  pasakumi = signal<Pasakums[]>([]);
+  pasakumsService = inject(PasakumsService);
 
-  PasakumsService = inject(PasakumsService);
-  router = inject(Router);
-
+  constructor() {
+    this.pasakumsService.getPasakumi().subscribe(data => {
+      this.pasakumi.set(data);
+    });
+  }
 }

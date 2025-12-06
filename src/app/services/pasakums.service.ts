@@ -1,17 +1,17 @@
-import { HttpClient } from "@angular/common/http";
-import { Inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { Pasakums } from "../models/pasakums.model";
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Pasakums } from '../models/pasakums.model';
 
-@Injectable ({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class PasakumsService {
-    private readonly URL: string = 'http://localhost:8080/pasakums';
+  http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api/pasakumi'; // Update to your backend URL
 
-    private http: HttpClient = Inject(HttpClient);
+  getPasakumi() {
+    return this.http.get<Pasakums[]>(this.apiUrl);
+  }
 
-    getPasakumi(): Observable<Pasakums[]> {
-        return this.http.get<Pasakums[]>(this.URL);
-    }
+  createPasakums(pasakums: Pasakums) {
+    return this.http.post<Pasakums>(this.apiUrl, pasakums);
+  }
 }
