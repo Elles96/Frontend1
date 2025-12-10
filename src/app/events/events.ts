@@ -3,8 +3,6 @@ import { Field, form, required } from '@angular/forms/signals';
 import { PasakumsService } from '../services/pasakumsservice';
 import { Pasakums } from '../models/pasakumsmodel';
 
-import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-events',
   imports: [Field],

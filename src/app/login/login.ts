@@ -1,17 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { Field } from '@angular/forms/signals';
-import { Lietotajs } from '../models/lietotajsmodel';
 import { form, maxLength, minLength, required } from '@angular/forms/signals';
 import { LietotajsService } from '../services/lietotajsservice';
 import { Router } from '@angular/router';
-// Removed UserGlobalSignal, not present in your project
-
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, Field],
+  imports: [Field],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -20,7 +15,8 @@ export class Login {
   userService: LietotajsService = inject(LietotajsService);
   router: Router = inject(Router);
 
-  userSignal = signal<Lietotajs>({ username: '', password: '' });
+  // Use username/password for form, but login payload will be mapped to lietotajvards/parole
+  userSignal = signal<{ username: string; password: string }>({ username: '', password: '' });
 
   loginForm = form(this.userSignal, (p) => {
     required(p.username, { message: 'Username is required' });
@@ -35,19 +31,30 @@ export class Login {
   errorMsg = signal('');
   successMsg = signal('');
 
-  onClick() {
+  onClick(event?: Event) {
+    console.log('Button clicked');
+    if (event) event.preventDefault();
     this.errorMsg.set('');
     this.successMsg.set('');
-    this.userService.login(this.userSignal()).subscribe({
+    // Map form values to backend login payload using userSignal
+    const { username, password } = this.userSignal();
+    const credentials: { lietotajvards: string; parole: string } = {
+      lietotajvards: username,
+      parole: password
+    };
+    this.userService.login(credentials).subscribe({
       next: (response: any) => {
+        console.log('Login response:', response);
         if (response.status === 200 && response.body !== null) {
           this.successMsg.set('Login successful!');
+          console.log('Navigating to /events');
           this.router.navigate(['/events']);
         } else {
           this.errorMsg.set('Login failed. Please check your credentials.');
         }
       },
       error: (error: any) => {
+        console.log('Login error:', error);
         this.errorMsg.set('Login error: ' + (error.message || error));
       }
     });
